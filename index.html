@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111a21">
+<title>HIACE CUSTOM LAB</title>
+<style>
+:root{--bg:#101820;--panel:#1b2933;--panel2:#243641;--line:#344955;--txt:#f2f6f8;--muted:#aebdc5;--gold:#f3b21b;--green:#8bd5a6;--red:#ff9e91}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;line-height:1.55}
+header{padding:22px 17px 16px;background:linear-gradient(140deg,#223744,#111a21 78%);border-bottom:1px solid var(--line)}
+.kicker{font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:900}h1{font-size:25px;line-height:1.2;margin:6px 0}header p{margin:6px 0 0;color:var(--muted);font-size:13px}
+main{max-width:1000px;margin:auto;padding:14px 12px 60px}.stepbar{display:flex;gap:6px;overflow:auto;margin-bottom:14px}.stepbar span{white-space:nowrap;padding:7px 10px;border:1px solid var(--line);border-radius:30px;color:var(--muted);font-size:11px}.stepbar .active{background:var(--gold);border-color:var(--gold);color:#151a1d;font-weight:900}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}.panel h2{font-size:18px;margin:0 0 9px}.muted{color:var(--muted);font-size:13px}.label{display:block;color:var(--gold);font-size:11px;font-weight:900;letter-spacing:.08em;margin-bottom:5px}
+select{width:100%;background:#111c23;color:var(--txt);border:1px solid #526570;border-radius:10px;padding:12px;font-size:15px}
+.row{display:flex;gap:9px;align-items:center}.row>*{flex:1;min-width:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.choice{border:1px solid var(--line);background:#17242c;color:var(--txt);border-radius:12px;padding:11px;text-align:left;min-height:76px}.choice strong{display:block;font-size:14px}.choice small{color:var(--muted);font-size:11px}.choice.active{border:2px solid var(--gold);background:#2c3028}
+button{font:inherit;cursor:pointer}.primary{width:100%;background:var(--gold);color:#171b1d;border:0;border-radius:11px;padding:12px;font-weight:900;margin-top:10px}.secondary{background:#314651;color:var(--txt);border:1px solid #526875;border-radius:10px;padding:9px 11px;font-size:13px}
+#viewerWrap{position:relative;background:radial-gradient(ellipse at 50% 48%,#40515a,#18252e 65%,#121c23);border-radius:14px;overflow:hidden;border:1px solid #455963}
+#viewer{height:300px;width:100%;touch-action:none;display:block}
+.viewerhint{position:absolute;left:10px;top:9px;background:#101820cc;padding:5px 8px;border-radius:7px;font-size:10px;color:#d7e0e4;pointer-events:none}
+.viewtools{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.partinfo{background:#111d24;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;min-height:84px}
+.partinfo b{color:var(--gold)}.partinfo p{margin:4px 0;font-size:13px;color:var(--muted)}
+.list{display:grid;gap:8px}.partrow{display:flex;gap:9px;align-items:center;background:#14212a;border:1px solid var(--line);border-radius:10px;padding:9px}.partrow .name{flex:1;font-size:13px}.partrow small{display:block;color:var(--muted);font-size:10px}.status{font-size:10px;color:var(--green)}
+.toolgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.tool{background:#14212a;border-radius:9px;padding:9px;font-size:12px;border:1px solid var(--line)}.tool small{display:block;color:var(--muted);font-size:10px}
+ol{padding-left:22px}li{padding:3px 0;font-size:13px}.warning{background:#332724;border-left:4px solid var(--red);padding:10px;border-radius:8px;font-size:12px;margin-top:10px}
+.hidden{display:none!important}.pill{display:inline-block;background:#344650;border-radius:30px;padding:4px 8px;font-size:10px;color:#dce5e9;margin:2px}
+footer{font-size:11px;color:var(--muted);padding:12px}
+@media(min-width:720px){.layout{display:grid;grid-template-columns:1fr 1.1fr;gap:12px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}#viewer{height:420px}}
+</style>
+</head>
+<body>
+<header><div class="kicker">GARAGE KNOWLEDGE / INTERACTIVE TRAINING</div><h1>HIACE CUSTOM LAB</h1><p>車両を選ぶ。カスタムを選ぶ。構造を見て、部品交換を疑似体験する。</p></header>
+<main>
+ <div class="stepbar"><span class="active">01 車両選択</span><span class="active">02 カスタム選択</span><span class="active">03 3D構造確認</span><span class="active">04 作業学習</span></div>
+ <section class="panel">
+  <span class="label">STEP 01 / VEHICLE</span><h2>カスタムするハイエースを選択</h2>
+  <div class="row">
+   <div><label class="label" for="generation">世代・型式</label><select id="generation">
+    <option value="H10">初代 H10系（1967–1977）</option>
+    <option value="H20">2代目 H20系（1977–1982）</option>
+    <option value="H50">3代目 H50系（1982–1989）</option>
+    <option value="H100">4代目 H100系（1989–2004）</option>
+    <option value="H200" selected>5代目 200系（2004–）</option>
+   </select></div>
+   <div><label class="label" for="facelift">200系の型・仕様</label><select id="facelift">
+    <option>初期型（1型）</option><option>2型</option><option>3型</option><option>4型</option><option>5型</option><option>6型</option><option>7型</option><option>8型</option><option selected>現行9型</option><option>該当なし／旧世代</option>
+   </select></div>
+  </div>
+  <div class="row" style="margin-top:9px">
+   <div><label class="label" for="drive">駆動方式</label><select id="drive"><option>2WD</option><option>4WD</option><option>未確認</option></select></div>
+   <div><label class="label" for="body">ボディ・ルーフ</label><select id="body"><option>標準ボディ・標準ルーフ</option><option>標準ボディ・ハイルーフ</option><option>ワイドボディ・ミドルルーフ</option><option>ワイドボディ・ハイルーフ</option><option>その他／未確認</option></select></div>
+  </div>
+  <p class="muted" id="vehicleNote">選択した世代に合わせた学習画面を表示します。正確な適合確認には車検証の型式・年式・駆動方式が必要です。</p>
+ </section>
+
+ <section class="panel">
+  <span class="label">STEP 02 / CUSTOM MENU</span><h2>希望するカスタムを選択</h2>
+  <div class="grid" id="customChoices">
+   <button class="choice active" data-custom="lower"><strong>ローダウン</strong><small>ブロック／トーションバー／リーフ</small></button>
+   <button class="choice" data-custom="fender"><strong>オーバーフェンダー</strong><small>仮合わせ／固定／出幅確認</small></button>
+   <button class="choice" data-custom="aero"><strong>エアロ・バンパー</strong><small>脱着／仮合わせ／チリ調整</small></button>
+   <button class="choice" data-custom="light"><strong>ヘッドライト交換</strong><small>脱着／配線／光軸</small></button>
+   <button class="choice" data-custom="wheel"><strong>ホイール・タイヤ</strong><small>サイズ／適合／干渉</small></button>
+   <button class="choice" data-custom="shock"><strong>ショック交換</strong><small>減衰／ストローク／取付</small></button>
+   <button class="choice" data-custom="leaf"><strong>リーフ交換・増しリーフ</strong><small>板バネ／Uボルト／ブッシュ</small></button>
+   <button class="choice" data-custom="interior"><strong>内装カスタム</strong><small>床張り／シート／収納</small></button>
+   <button class="choice" data-custom="exhaust"><strong>マフラー交換</strong><small>排気系／吊りゴム／漏れ確認</small></button>
+   <button class="choice" data-custom="stabilizer"><strong>スタビライザー</strong><small>本体／リンク／ブッシュ</small></button>
+  </div>
+ </section>
+
+ <div class="layout">
+  <section class="panel">
+   <span class="label">STEP 03 / 3D WORKBENCH</span><h2>3Dモデル・部品交換シミュレーター</h2>
+   <div id="viewerWrap"><div id="viewer"></div><div class="viewerhint">ドラッグ：回転　ピンチ／ホイール：拡大　部品をタップ：選択</div></div>
+   <div class="viewtools"><button class="secondary" id="resetView">視点リセット</button><button class="secondary" id="explode">部品を展開</button><button class="secondary" id="restore">全パーツ復元</button></div>
+   <div class="partinfo" id="partInfo"><b>部品をタップしてね</b><p>3Dモデル上の部品を選ぶと、名称・役割・交換操作が表示されます。</p></div>
+   <p class="muted">※現在の3Dは操作方法を確認するための簡易学習モデルです。実車の寸法・内部構造・取付位置を保証する精密CADではありません。</p>
+  </section>
+  <section class="panel">
+   <span class="label">STEP 04 / LEARNING GUIDE</span><h2 id="customTitle">リア・ブロックローダウン</h2>
+   <div id="customDescription" class="muted"></div>
+   <h3 style="margin-top:14px">必要な工具</h3><div class="toolgrid" id="toolsList"></div>
+   <h3 style="margin-top:14px">関連部品</h3><div class="list" id="partsList"></div>
+   <h3 style="margin-top:14px">作業の流れ</h3><ol id="stepsList"></ol>
+   <div class="warning" id="safetyNote"></div>
+  </section>
+ </div>
+ <section class="panel">
+  <span class="label">PARTS LEARNING</span><h2>部品の取り外し・交換を試す</h2>
+  <p class="muted">部品を選択して「取り外す」「取り付ける」を押すと、3Dモデルの表示が切り替わります。実車作業の代わりではなく、部品の位置関係を覚えるための機能です。</p>
+  <div class="grid" id="partActions"></div>
+ </section>
+ <section class="panel">
+  <span class="label">VEHICLE DATA</span><h2>適合確認メモ</h2>
+  <p class="muted">実作業に進む前に、車検証と現車で確認する情報。</p>
+  <div class="grid">
+   <div><label class="label">車両型式</label><input id="modelCode" placeholder="例：TRH200V" style="width:100%;padding:11px;border-radius:9px;background:#111c23;color:white;border:1px solid #526570"></div>
+   <div><label class="label">初度登録年月</label><input id="regDate" placeholder="例：令和○年○月" style="width:100%;padding:11px;border-radius:9px;background:#111c23;color:white;border:1px solid #526570"></div>
+  </div>
+  <p class="muted">この欄は端末内で一時的に入力するメモです。保存機能はまだありません。</p>
+ </section>
+ <footer>HIACE CUSTOM LAB prototype 0.1｜安全に関わる支持位置・締付トルク・適合・保安基準は、車両別整備要領書および製品メーカーの最新説明書を必ず確認してください。</footer>
+</main>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const $=id=>document.getElementById(id);
+const data={
+ lower:{title:'リア・ブロックローダウン',desc:'リーフスプリングとリアアクスルの間にロワリングブロックを配置し、リア車高を下げるカスタム。世代・駆動方式・キットごとに構造と適合が異なります。',tools:[['フロアジャッキ','指定されたリフトポイントで使用'],['リジッドラック','車体を機械的に支持'],['輪止め','車輪の移動防止'],['ソケット・ラチェット','締結部品の脱着'],['トルクレンチ','指定トルクで締結'],['補助ジャッキ','アクスルの支持・位置調整']],parts:[['ロワリングブロック','リア車高を下げるスペーサー'],['専用Uボルト','アクスルとリーフ周辺を固定'],['スプリングプレート','Uボルトと組み合わせて保持'],['ナット・ワッシャー','キット指定の締結部品']],steps:['車検証で型式・年式・駆動方式を確認し、キット適合を照合','平坦で硬い場所に停車し、輪止め・指定支持位置を確認','整備要領書に従って車体とアクスルを適切に支持','製品説明書の手順で既存締結部を取り外す','ブロックの向き・位置決めを確認して組み付ける','指定新品部品・指定締付方法で締結する','ホース・配線・ショック・バンプストローク・干渉を点検','車高・左右差・アライメント等を確認し、指定手順で再点検'],safety:'危険：車体をジャッキだけで支持して下に入らない。リーフスプリングの荷重、アクスルの落下・転位に注意。Uボルト等の再使用可否と締付値は製品説明書を優先。'},
+ fender:{title:'オーバーフェンダー取り付け',desc:'フェンダー外側に部品を追加し、外観やタイヤ周辺の意匠を変更するカスタム。出幅・固定方法・灯火類やタイヤとの関係、車幅変更の扱いを確認します。',tools:[['内張りはがし','クリップを傷めにくく外す'],['ラチェット・ソケット','既存部品の脱着'],['脱脂剤・クロス','貼付面の清掃'],['マスキングテープ','位置決め・養生'],['メジャー・ノギス','出幅・位置の測定'],['トルクレンチ','指定締結部の管理']],parts:[['オーバーフェンダー','外装追加部品'],['両面テープ／モール','製品指定の固定・保護材'],['クリップ・ボルト','製品指定の固定具']],steps:['車両と製品の適合・保安基準上の扱いを確認','装着位置を清掃・脱脂し、塗装面を保護','左右・前後の仮合わせを行い、隙間と出幅を確認','説明書に従ってテープ・クリップ・ボルト等で固定','タイヤ、ドア、スライドドアとの干渉を確認','固定状態と車幅・突出状態を確認'],safety:'注意：車幅・突出・鋭利な端部など保安基準への適合を確認。穴あけ加工は防錆処理と配線・内部部品の位置確認が必要。'},
+ aero:{title:'エアロ・バンパー交換',desc:'バンパーやスポイラーを交換・追加する外装カスタム。グレードや年式で取付形状・センサー・灯火類が異なります。',tools:[['ソケット・ラチェット','ボルト脱着'],['内張りはがし','クリップ取り外し'],['養生テープ','塗装面の保護'],['トリムクリップ工具','樹脂クリップ脱着'],['トルクレンチ','指定締結管理']],parts:[['フロント／リアバンパー','外装部品'],['ブラケット','位置決め・支持'],['クリップ・ボルト','固定具'],['フォグ・センサー類','仕様に応じて移設']],steps:['型式・グレード・センサー仕様を確認','周辺パネルを養生し、必要な灯火・センサーを確認','説明書に従って純正バンパーを取り外す','ブラケット・センサー等を適切に移設','新しいエアロを仮合わせし、隙間とチリを確認','指定箇所を固定し、灯火・センサー作動を点検'],safety:'注意：エアバッグ関連センサー・配線や灯火類を損傷しない。塗装済み部品は落下・接触による傷に注意。'},
+ light:{title:'ヘッドライト交換',desc:'ヘッドライトユニットやバルブを交換する作業。カプラー形状、灯火仕様、光軸、保安基準への適合を確認します。',tools:[['ソケット・ラチェット','ライト固定部の脱着'],['内張りはがし','周辺カバーの取り外し'],['樹脂用工具','クリップを傷めず外す'],['検電テスター','回路確認（必要時）'],['光軸テスター','照射方向の確認']],parts:[['ヘッドライトユニット','灯火本体'],['カプラー・配線','電源・信号接続'],['固定ボルト・クリップ','ユニット固定']],steps:['年式・グレード・灯火方式・適合品を確認','必要に応じてメーカー指定の電源遮断手順を実施','周辺部品を外し、コネクターをロック解除して取り外す','新しいユニットを固定し、配線・防水状態を確認','点灯・ハイロー・ウインカー等の作動を確認','光軸を適切な設備で点検・調整'],safety:'注意：高電圧式灯火装置はメーカー指定手順が必要。配線色だけで判断しない。光軸・灯火色・明るさ等の適合を確認。'},
+ wheel:{title:'ホイール・タイヤ交換',desc:'ホイールサイズ、PCD、穴数、ハブ径、インセット、タイヤ外径・荷重指数を確認して交換するカスタム。',tools:[['フロアジャッキ','指定位置で持ち上げ'],['リジッドラック','安全支持'],['ホイール用ソケット','ナット脱着'],['トルクレンチ','指定トルクで締結'],['空気圧ゲージ','空気圧確認'],['タイヤゲージ','溝・状態確認']],parts:[['ホイール','サイズ・PCD・インセット確認'],['タイヤ','外径・荷重能力確認'],['ナット','座面形状・ねじ規格確認']],steps:['車両指定サイズとホイール諸元を照合','荷重指数・速度記号・外径・干渉を確認','車両を安全に支持しホイールを脱着','ハブ面・座面を清掃し、適合ナットで仮締め','対角順など指定手順でトルク締結','空気圧・干渉・突出・走行後点検を実施'],safety:'注意：ナット座面・ねじ規格の不一致は脱輪につながる。インパクトで最終締付けしない。車両・ホイールメーカー指定値を確認。'},
+ shock:{title:'ショックアブソーバー交換',desc:'スプリングの揺れを減衰させるショックを交換する作業。取付長・ストローク・減衰調整方式・適合を確認します。',tools:[['ジャッキ・リジッドラック','安全な支持'],['ソケット・レンチ','取付部の脱着'],['トルクレンチ','指定トルク管理'],['補助ジャッキ','サスペンション支持'],['浸透潤滑剤','固着部の補助']],parts:[['ショックアブソーバー','振動を減衰'],['ブッシュ・カラー','取付部の緩衝・位置決め'],['ナット・ワッシャー','製品指定締結部品']],steps:['車両・製品適合と取付方向を確認','車両とサスペンションを適切に支持','メーカー指定手順で上下取付部を外す','新旧の長さ・形状・付属品を照合','指定姿勢・手順で取り付ける','締結・干渉・異音・漏れを確認'],safety:'注意：サスペンションを無理に垂らさず、ブレーキホースやABS配線に張力をかけない。'},
+ leaf:{title:'リーフスプリング交換・増しリーフ',desc:'リアの板バネを交換・追加し、荷重特性や車高を変更する作業。強い蓄積荷重があるため保持方法と専用手順が重要です。',tools:[['リジッドラック','車体支持'],['アクスル支持ジャッキ','車軸の保持'],['ソケット・レンチ','締結部の脱着'],['トルクレンチ','指定締結'],['リーフ保持具','バネ束の安全保持']],parts:[['リーフスプリング','板バネ本体'],['センターボルト','リーフ束の位置保持'],['Uボルト','アクスル周辺の固定'],['ブッシュ・シャックル','端部連結・緩衝']],steps:['車両・リーフ仕様・積載条件を確認','車体とアクスルを適切に支持','メーカー手順で荷重を管理しながら取り外す','新旧部品・向き・左右を照合','指定保持具と手順で組み付ける','指定新品締結部品・規定方法で締結','車高・左右差・干渉・走行状態を確認'],safety:'危険：リーフスプリングは蓄積荷重で急に開放・移動することがある。保持具なしの分解や不適切なクランプ作業をしない。'},
+ interior:{title:'内装カスタム',desc:'床張り・シート・収納・内張りなどを変更する作業。車体配線、シートベルト、エアバッグ、乗車定員や構造変更の扱いを確認します。',tools:[['内張りはがし','クリップ脱着'],['ラチェット・ソケット','シート等の締結'],['トリムクリップ工具','樹脂部品の脱着'],['メジャー','採寸'],['カッター・工具','材料加工（適切な保護具）']],parts:[['床材・下地','床面の仕上げ'],['シート・ブラケット','座席・固定具'],['内張り・クリップ','内装パネル']],steps:['車両仕様・乗車定員・配線位置を確認','必要箇所を養生し、内装を順番に取り外す','採寸・仮合わせを行う','配線・エアバッグ・シートベルトを避けて加工','部品を固定し、シート・ベルト等の作動確認','異音・干渉・固定状態を確認'],safety:'注意：SRSエアバッグ配線やシートベルト固定部を加工・共締めしない。構造・定員変更の要否を確認。'},
+ exhaust:{title:'マフラー交換',desc:'排気系部品を交換するカスタム。適合、排気漏れ、遮熱、最低地上高、騒音・排出ガス関連の基準を確認します。',tools:[['リフト／支持具','安全な車両支持'],['ソケット・レンチ','フランジ締結部の脱着'],['浸透潤滑剤','固着ナット補助'],['排気系ハンガー工具','吊りゴム脱着'],['トルクレンチ','指定締結']],parts:[['マフラー本体','排気管・消音器'],['ガスケット','接合部のシール'],['吊りゴム','排気系を支持'],['ボルト・ナット','フランジ締結']],steps:['車両・排気系仕様と製品認証・適合を確認','排気系が十分冷えていることを確認','車両を適切に支持し、排気系を保持','指定手順で接合部・吊り部を外す','新しいガスケット等を用いて仮組み','位置・クリアランスを確認し指定締結','始動後に漏れ・振動・干渉を点検'],safety:'注意：高温部による火傷、排気ガス吸入、車体落下に注意。換気された場所で作業する。'},
+ stabilizer:{title:'スタビライザー交換',desc:'旋回時の車体ロールを抑えるスタビライザーやリンク・ブッシュを交換する作業。左右の取付状態やリンク角度を確認します。',tools:[['ジャッキ・リジッドラック','安全支持'],['ソケット・レンチ','リンク・ブラケット脱着'],['トルクレンチ','指定締結'],['補助ジャッキ','位置合わせ'],['メジャー','左右・干渉確認']],parts:[['スタビライザー','左右サスペンションを連結'],['スタビリンク','サスペンションと接続'],['ブッシュ・ブラケット','支持・緩衝']],steps:['車両仕様・製品適合を確認','車両を水平に支持し、左右荷重条件を整える','リンク・ブラケットを指定手順で取り外す','ブッシュ・リンクの向きと左右を確認','説明書に従って組み付ける','指定姿勢で締結し、干渉・異音を確認'],safety:'注意：左右サスペンションの荷重差で部品に力がかかる。無理にボルトを抜かず、支持・荷重条件を整える。'}
+};
+let selected='lower',scene,camera,renderer,raycaster,mouse,root,parts={},selectedPart=null,drag=false,lastX=0,lastY=0,rotY=-.55,rotX=.08,zoom=1,expanded=false;
+const partDefs=[
+ {id:'body',name:'車体ボディ',role:'車両の骨格・外板を表す簡易モデル。世代ごとの実寸形状ではありません。',pos:[0,1.15,0],size:[4.7,1.45,1.75],color:0xe2e6e8},
+ {id:'wheelFL',name:'フロント左ホイール',role:'タイヤ・ホイールの位置関係を確認するための表示。',pos:[-1.45,.48,.94],size:[.72,.72,.22],color:0x20252a},
+ {id:'wheelFR',name:'フロント右ホイール',role:'タイヤ・ホイールの位置関係を確認するための表示。',pos:[-1.45,.48,-.94],size:[.72,.72,.22],color:0x20252a},
+ {id:'wheelRL',name:'リア左ホイール',role:'リアアクスル周辺の位置関係を確認するための表示。',pos:[1.45,.48,.94],size:[.72,.72,.22],color:0x20252a},
+ {id:'wheelRR',name:'リア右ホイール',role:'リアアクスル周辺の位置関係を確認するための表示。',pos:[1.45,.48,-.94],size:[.72,.72,.22],color:0x20252a},
+ {id:'axle',name:'リアアクスル（簡易表示）',role:'リア左右輪をつなぐ車軸周辺の概念表示。',pos:[1.45,.82,0],size:[.22,.18,2.0],color:0x87949a},
+ {id:'leaf',name:'リーフスプリング（簡易表示）',role:'板バネ式スプリングの位置を示す概念表示。',pos:[1.45,.98,.62],size:[1.7,.09,.16],color:0x657b88},
+ {id:'block',name:'ロワリングブロック（簡易表示）',role:'リアのリーフとアクスルの間に入る部品の概念表示。',pos:[1.45,.9,.62],size:[.34,.18,.25],color:0xf0ae26},
+ {id:'shock',name:'リアショック（簡易表示）',role:'スプリングの振動を減衰させる部品。',pos:[1.12,.85,.82],size:[.14,.72,.14],color:0x397ca1},
+ {id:'fender',name:'オーバーフェンダー（簡易表示）',role:'フェンダー外側に追加する外装部品の概念表示。',pos:[1.45,1.55,.94],size:[1.35,.16,.16],color:0xf0ae26}
+];
+function init3D(){
+ const host=$('viewer');scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(42,host.clientWidth/300,.1,100);camera.position.set(6,4.2,7);
+ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(host.clientWidth,300);renderer.shadowMap.enabled=true;host.appendChild(renderer.domElement);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x34434d,2));let light=new THREE.DirectionalLight(0xffffff,2.2);light.position.set(-4,8,5);scene.add(light);
+ root=new THREE.Group();scene.add(root);raycaster=new THREE.Raycaster();mouse=new THREE.Vector2();
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.MeshStandardMaterial({color:0x263640,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=.04;scene.add(floor);
+ const grid=new THREE.GridHelper(20,20,0x52636c,0x35454e);grid.position.y=.045;scene.add(grid);
+ buildModel();host.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;host.setPointerCapture(e.pointerId)});host.addEventListener('pointermove',e=>{if(!drag)return;rotY+=(e.clientX-lastX)*.009;rotX=Math.max(-.25,Math.min(.65,rotX+(e.clientY-lastY)*.006));lastX=e.clientX;lastY=e.clientY;root.rotation.set(rotX,rotY,0)});host.addEventListener('pointerup',e=>{drag=false;pick(e)});host.addEventListener('pointercancel',()=>drag=false);
+ host.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.65,Math.min(1.65,zoom+(e.deltaY>0?-.07:.07)));camera.position.set(6/zoom,4.2/zoom,7/zoom)},{passive:false});
+ window.addEventListener('resize',resize3D);animate();
+}
+function buildModel(){
+ while(root.children.length)root.remove(root.children[0]);parts={};
+ function mesh(id,geo,mat,pos){let m=new THREE.Mesh(geo,mat);m.position.set(...pos);m.userData.partId=id;m.castShadow=true;m.receiveShadow=true;root.add(m);parts[id]=m;return m}
+ const paint=new THREE.MeshStandardMaterial({color:0xe2e6e8,metalness:.22,roughness:.38});
+ let body=mesh('body',new THREE.BoxGeometry(4.7,1.45,1.75),paint,[0,1.15,0]);
+ // cabin windscreen and windows as dark panels
+ mesh('glassFront',new THREE.BoxGeometry(.06,.85,1.48),new THREE.MeshStandardMaterial({color:0x263e4b,metalness:.25,roughness:.2}),[-2.36,1.55,0]);
+ mesh('windowSide',new THREE.BoxGeometry(1.8,.58,.025),new THREE.MeshStandardMaterial({color:0x294653,metalness:.2,roughness:.2}),[-.95,1.63,.89]);
+ mesh('windowSide2',new THREE.BoxGeometry(1.8,.58,.025),new THREE.MeshStandardMaterial({color:0x294653,metalness:.2,roughness:.2}),[1.05,1.63,.89]);
+ const tireMat=new THREE.MeshStandardMaterial({color:0x20252a,roughness:.95}),rimMat=new THREE.MeshStandardMaterial({color:0xb8c1c6,metalness:.75,roughness:.25});
+ [['wheelFL',-1.45,.48,.94],['wheelFR',-1.45,.48,-.94],['wheelRL',1.45,.48,.94],['wheelRR',1.45,.48,-.94]].forEach(([id,x,y,z])=>{let w=mesh(id,new THREE.CylinderGeometry(.38,.38,.22,32),tireMat,[x,y,z]);w.rotation.x=Math.PI/2;let r=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.235,24),rimMat);r.rotation.x=Math.PI/2;r.position.copy(w.position);r.userData.partId=id;root.add(r)});
+ mesh('axle',new THREE.BoxGeometry(.22,.18,2.0),new THREE.MeshStandardMaterial({color:0x87949a,metalness:.6}),[1.45,.82,0]);
+ mesh('leaf',new THREE.BoxGeometry(1.7,.09,.16),new THREE.MeshStandardMaterial({color:0x657b88,metalness:.55}),[1.45,.98,.62]);
+ mesh('block',new THREE.BoxGeometry(.34,.18,.25),new THREE.MeshStandardMaterial({color:0xf0ae26,metalness:.4}),[1.45,.9,.62]);
+ mesh('shock',new THREE.CylinderGeometry(.075,.075,.72,12),new THREE.MeshStandardMaterial({color:0x397ca1,metalness:.45}),[1.12,.85,.82]);
+ mesh('fender',new THREE.BoxGeometry(1.35,.16,.16),new THREE.MeshStandardMaterial({color:0xf0ae26,metalness:.3}),[1.45,1.55,.94]);
+ // front fascia
+ mesh('frontBumper',new THREE.BoxGeometry(.18,.25,1.85),new THREE.MeshStandardMaterial({color:0x303a40}),[-2.42,.62,0]);
+}
+function resize3D(){if(!renderer)return;let host=$('viewer');camera.aspect=host.clientWidth/host.clientHeight;camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight)}
+function animate(){requestAnimationFrame(animate);if(renderer)renderer.render(scene,camera)}
+function pick(e){const rect=renderer.domElement.getBoundingClientRect();mouse.x=((e.clientX-rect.left)/rect.width)*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(mouse,camera);let hits=raycaster.intersectObjects(root.children,true);if(hits.length){let id=hits[0].object.userData.partId;if(id)showPart(id)}}
+function showPart(id){selectedPart=id;let d=partDefs.find(p=>p.id===id);if(!d){$('partInfo').innerHTML='<b>選択部品</b><p>このパーツは簡易モデルの補助表示です。</p>';return}
+ $('partInfo').innerHTML='<b>'+d.name+'</b><p>'+d.role+'</p><div class="row"><button class="secondary" onclick="togglePart(\\''+id+'\\',false)">取り外す</button><button class="secondary" onclick="togglePart(\\''+id+'\\',true)">取り付ける</button></div>';
+ Object.values(parts).forEach(m=>{if(m.material&&m.userData.partId===id)m.material.emissive=new THREE.Color(0x553300)});
+}
+window.togglePart=(id,on)=>{if(parts[id])parts[id].visible=on;let d=partDefs.find(p=>p.id===id);$('partInfo').innerHTML='<b>'+d.name+'</b><p>'+(on?'モデル上に表示しています。':'モデルから取り外した状態です。')+'（学習用の表示切替）</p><div class="row"><button class="secondary" onclick="togglePart(\\''+id+'\\',false)">取り外す</button><button class="secondary" onclick="togglePart(\\''+id+'\\',true)">取り付ける</button></div>';renderPartActions()};
+function renderPartActions(){let ids=['block','leaf','shock','fender','axle'];$('partActions').innerHTML=ids.map(id=>{let p=partDefs.find(x=>x.id===id);return `<div class="partrow"><div class="name"><b>${p.name}</b><small>${p.role}</small></div><button class="secondary" onclick="togglePart('${id}',${parts[id]?.visible===false})">${parts[id]?.visible===false?'取付':'取外'}</button></div>`}).join('')}
+function renderCustom(){let d=data[selected];$('customTitle').textContent=d.title;$('customDescription').textContent=d.desc;$('toolsList').innerHTML=d.tools.map(t=>`<div class="tool"><b>${t[0]}</b><small>${t[1]}</small></div>`).join('');$('partsList').innerHTML=d.parts.map(p=>`<div class="partrow"><div class="name"><b>${p[0]}</b><small>${p[1]}</small></div></div>`).join('');$('stepsList').innerHTML=d.steps.map(s=>`<li>${s}</li>`).join('');$('safetyNote').textContent=d.safety}
+document.querySelectorAll('[data-custom]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-custom]').forEach(x=>x.classList.remove('active'));b.classList.add('active');selected=b.dataset.custom;renderCustom();highlightRelevant()}));
+function highlightRelevant(){Object.values(parts).forEach(m=>{if(m.material&&m.material.emissive)m.material.emissive.setHex(0x000000)});let ids=selected==='lower'?['block','leaf','axle','shock']:selected==='fender'?['fender']:selected==='shock'?['shock']:selected==='leaf'?['leaf','axle']:selected==='wheel'?['wheelFL','wheelFR','wheelRL','wheelRR']:[];ids.forEach(id=>{if(parts[id])parts[id].material.emissive=new THREE.Color(0x553300)})}
+$('generation').addEventListener('change',()=>{let v=$('generation').value;$('facelift').disabled=v!=='H200';$('facelift').value=v==='H200'?'現行9型':'該当なし／旧世代';$('vehicleNote').textContent=v==='H200'?'200系は年式・型・エンジン・駆動方式で適合が異なります。9型の呼称だけで部品を決めず車両型式を確認。':'旧世代は年式・型式・仕様によって構造が大きく異なります。現車と整備資料で必ず確認してください。'});
+$('resetView').onclick=()=>{rotY=-.55;rotX=.08;zoom=1;root.rotation.set(rotX,rotY,0);camera.position.set(6,4.2,7)};
+$('explode').onclick=()=>{expanded=!expanded;let offsets={body:[0,.55,0],wheelFL:[-.25,0,.25],wheelFR:[-.25,0,-.25],wheelRL:[.25,0,.25],wheelRR:[.25,0,-.25],block:[0,.35,0],leaf:[0,-.22,0],shock:[.25,0,.15],fender:[0,.25,.15]};Object.entries(offsets).forEach(([id,o])=>{let m=parts[id];if(m){let p=partDefs.find(x=>x.id===id);if(!m.userData.basePos)m.userData.basePos=m.position.clone();m.position.copy(m.userData.basePos);if(expanded)m.position.add(new THREE.Vector3(...o))}});$('explode').textContent=expanded?'展開を戻す':'部品を展開'};
+$('restore').onclick=()=>{Object.values(parts).forEach(m=>m.visible=true);expanded=false;$('explode').textContent='部品を展開';partDefs.forEach(p=>{if(parts[p.id]&&parts[p.id].userData.basePos)parts[p.id].position.copy(parts[p.id].userData.basePos)});renderPartActions();$('partInfo').innerHTML='<b>全パーツを復元しました</b><p>部品をタップして詳細を確認できます。</p>'};
+$('generation').dispatchEvent(new Event('change'));init3D();renderCustom();renderPartActions();highlightRelevant();
+</script>
+</body></html>
